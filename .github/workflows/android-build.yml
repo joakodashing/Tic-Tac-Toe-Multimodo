@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Prepare Cordova Project for APK
 
 on:
   push:
@@ -10,27 +10,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js 18
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: 18
 
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Prepare Cordova Project
+      - name: Create Cordova project
         run: |
           cordova create tictac com.example.tictactoe "Tic Tac Toe Multimodo"
+          rm -rf tictac/www
+          cp -r www tictac/www
           cd tictac
-          rm -rf www
-          cp -r ../www ./
           cordova platform add android
-          cordova build android --release
 
-      - name: Upload APK
+      - name: Zip the Cordova project
+        run: zip -r tictac-project.zip tictac
+
+      - name: Upload zip
         uses: actions/upload-artifact@v4
         with:
-          name: android-apk
-          path: tictac/platforms/android/app/build/outputs/apk/release/app-release.apk
+          name: cordova-project
+          path: tictac-project.zip
