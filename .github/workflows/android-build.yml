@@ -20,11 +20,12 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Prepare project
+      - name: Prepare Cordova Project
         run: |
           cordova create tictac com.example.tictactoe "Tic Tac Toe Multimodo"
           cd tictac
-          cp -r ../www/* www/
+          rm -rf www
+          cp -r ../www ./
           cordova platform add android
           cordova build android --release
 
